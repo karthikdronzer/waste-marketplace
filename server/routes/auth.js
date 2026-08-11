@@ -9,6 +9,12 @@ router.post('/register', async (req, res) => {
   try {
     const { name, email, password, role, companyName, phone } = req.body;
 
+
+    // Validate role
+    if (!['industry', 'buyer'].includes(role)) {
+      return res.status(400).json({ message: 'Role must be either "industry" or "buyer"' });
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {

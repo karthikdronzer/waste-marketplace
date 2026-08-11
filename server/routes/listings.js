@@ -5,6 +5,10 @@ const authMiddleware = require('../middleware/auth');
 
 router.post('/', authMiddleware, async (req, res) => {
   try {
+    if (req.user.role !== 'industry') {
+      return res.status(403).json({ message: 'Only industry accounts can post waste listings' });
+    }
+
     const { title, description, wasteType, quantity, unit, pricePerUnit, location } = req.body;
 
     const newListing = new WasteListing({
