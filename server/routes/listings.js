@@ -60,5 +60,47 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// UPDATE a listing (protected — only the industry who posted it can edit)
+router.put('/:id', authMiddleware, async (req, res) => {
+  try {
+    const listing = await WasteListing.findById(req.params.id);
+
+    if (!listing) {
+      return res.status(404).json({ message: 'Listing not found' });
+    }
+
+    if (listing.postedBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You can only edit your own listings' });
+    }
+
+    const updates = req.body;
+    Object.assign(listing, updates);
+    await listing.save();
+
+    res.json(listing);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// DELETE a listing (protected — only the industry who posted it can delete)
+router.delete('/:id', authMiddleware, async (req, res) => {
+  try {
+    const listing = await WasteListing.findById(req.params.id);
+
+    if (!listing) {
+      return res.status(404).json({ message: 'Listing not found' });
+    }
+
+    if (listing.postedBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You can only delete your own listings' });
+    }
+
+    await listing.deleteOne();
+    res.json({ message: 'Listing deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
 
 module.exports = router;
