@@ -25,7 +25,25 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const listings = await WasteListing.find({ status: 'available' }).populate('postedBy', 'name email');
+    const { wasteType, location, minPrice, maxPrice } = req.query;
+
+    const filter = { status: 'available' };
+
+    if (wasteType) {
+      filter.wasteType = wasteType;
+    }
+
+    if (location) {
+      filter.location = { $regex: location, $options: 'i' }; // case-insensitive partial match
+    }
+
+    if (minPrice || maxPrice) {
+      filter.pricePerUnit = {};
+      if (minPrice) filter.pricePerUnit.$gte = Number(minPrice);
+      if (maxPrice) filter.pricePerUnit.$lte = Number(maxPrice);
+    }
+
+    const listings = await WasteListing.find(filter).populate('postedBy', 'name email');
     res.json(listings);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -41,5 +59,6 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
+
 
 module.exports = router;
