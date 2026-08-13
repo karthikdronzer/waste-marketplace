@@ -6,9 +6,13 @@ function ListingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [listing, setListing] = useState(null);
+  const [message, setMessage] = useState('');
+  const [inquirySent, setInquirySent] = useState(false);
+  const [inquiryError, setInquiryError] = useState('');
+  const user = JSON.parse(localStorage.getItem('user'));
   const [error, setError] = useState('');
 
-  useEffect(() => {
+useEffect(() => {
     const fetchListing = async () => {
       try {
         const response = await API.get(`/listings/${id}`);
@@ -19,6 +23,22 @@ function ListingDetail() {
     };
     fetchListing();
   }, [id]);
+
+  const handleInquiry = async (e) => {
+    e.preventDefault();
+    setInquiryError('');
+    const token = localStorage.getItem('token');
+    try {
+      await API.post(
+        '/inquiries',
+        { listingId: id, message },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setInquirySent(true);
+    } catch (err) {
+      setInquiryError(err.response?.data?.message || 'Failed to send inquiry');
+    }
+  };
 
   if (error) {
     return <p className="text-center text-red-500 mt-10">{error}</p>;
@@ -65,6 +85,32 @@ function ListingDetail() {
           {listing.postedBy?.email}
         </div>
       </div>
+    {user?.role === 'buyer' && (
+  <div className="border-t mt-6 pt-6">
+    {inquirySent ? (
+      <p className="text-green-600 font-medium">✅ Interest sent to the seller!</p>
+    ) : (
+      <form onSubmit={handleInquiry} className="space-y-3">
+        <label className="block text-sm font-medium text-gray-700">Message to seller</label>
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          required
+          rows="3"
+          placeholder="I'm interested in this listing, please share more details..."
+          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        {inquiryError && <p className="text-red-500 text-sm">{inquiryError}</p>}
+        <button
+          type="submit"
+          className="bg-amber-500 text-white px-5 py-2 rounded-md font-semibold hover:bg-amber-600 transition"
+        >
+          Express Interest
+        </button>
+      </form>
+    )}
+  </div>
+)}  
     </div>
   );
 }
