@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import API from '../api/axios';
+import { useNavigate } from 'react-router-dom'; 
 
 function Listings() {
   const [listings, setListings] = useState([]);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -30,9 +32,10 @@ function Listings() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {listings.map((listing) => (
           <div
-            key={listing._id}
-            className="bg-white rounded-xl shadow-sm hover:shadow-lg transition p-5 border border-gray-100"
-          >
+  key={listing._id}
+  onClick={() => navigate(`/listings/${listing._id}`)}
+  className="bg-white rounded-xl shadow-sm hover:shadow-lg transition p-5 border border-gray-100 cursor-pointer"
+>
             <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full mb-3">
               {listing.wasteType}
             </span>

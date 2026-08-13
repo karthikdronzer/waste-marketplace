@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import Listings from './pages/Listings';
 import PostListing from './pages/PostListing';
 import MyListings from './pages/MyListings';
+import ListingDetail from './pages/ListingDetail';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/listings" element={<Listings />} />
+        <Route path="/listings/:id" element={<ListingDetail />} />
         <Route
           path="/post-listing"
           element={
