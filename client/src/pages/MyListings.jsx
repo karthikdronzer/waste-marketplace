@@ -17,15 +17,11 @@ function MyListings() {
     }
   };
 
-  useEffect(() => {
-    fetchMyListings();
-  }, []);
+  useEffect(() => { fetchMyListings(); }, []);
 
   const handleDelete = async (id) => {
     try {
-      await API.delete(`/listings/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await API.delete(`/listings/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       fetchMyListings();
     } catch (err) {
       setError('Failed to delete listing');
@@ -34,11 +30,7 @@ function MyListings() {
 
   const handleMarkSold = async (id) => {
     try {
-      await API.put(
-        `/listings/${id}`,
-        { status: 'sold' },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await API.put(`/listings/${id}`, { status: 'sold' }, { headers: { Authorization: `Bearer ${token}` } });
       fetchMyListings();
     } catch (err) {
       setError('Failed to update listing');
@@ -46,24 +38,47 @@ function MyListings() {
   };
 
   return (
-    <div>
-      <h2>My Listings</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {listings.length === 0 && !error && <p>You haven't posted any listings yet.</p>}
+    <div className="max-w-5xl mx-auto px-6 py-10">
+      <h2 className="text-3xl font-bold text-green-800 mb-8">My Listings</h2>
+      {error && <p className="text-red-500">{error}</p>}
+      {listings.length === 0 && !error && (
+        <p className="text-gray-400 italic">You haven't posted any listings yet.</p>
+      )}
 
-      {listings.map((listing) => (
-        <div key={listing._id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
-          <h3>{listing.title}</h3>
-          <p>Status: {listing.status}</p>
-          <p>Quantity: {listing.quantity} {listing.unit}</p>
-          <p>Price: ₹{listing.pricePerUnit} per {listing.unit}</p>
+      <div className="space-y-4">
+        {listings.map((listing) => (
+          <div key={listing._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex justify-between items-center">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-lg font-bold text-gray-800">{listing.title}</h3>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                  listing.status === 'available' ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'
+                }`}>
+                  {listing.status}
+                </span>
+              </div>
+              <p className="text-sm text-gray-500">{listing.quantity} {listing.unit} • ₹{listing.pricePerUnit}/{listing.unit}</p>
+            </div>
 
-          {listing.status === 'available' && (
-            <button onClick={() => handleMarkSold(listing._id)}>Mark as Sold</button>
-          )}
-          <button onClick={() => handleDelete(listing._id)}>Delete</button>
-        </div>
-      ))}
+            <div className="flex gap-2">
+              {listing.status === 'available' && (
+                <button
+                  onClick={() => handleMarkSold(listing._id)}
+                  className="bg-amber-500 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-amber-600 transition"
+                >
+                  Mark as Sold
+                </button>
+              )}
+              <button
+                onClick={() => handleDelete(listing._id)}
+                className="bg-red-500 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-red-600 transition"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

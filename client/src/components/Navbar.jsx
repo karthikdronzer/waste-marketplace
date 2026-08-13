@@ -11,25 +11,42 @@ function Navbar() {
   };
 
   return (
-    <nav style={{ display: 'flex', gap: '15px', padding: '10px', borderBottom: '1px solid #ccc' }}>
-      <Link to="/listings">Browse Listings</Link>
-      {user ? (
-  <>
-    <span>Hi, {user.name} ({user.role})</span>
-    {user.role === 'industry' && (
-  <>
-    <Link to="/post-listing">Post a Listing</Link>
-    <Link to="/my-listings">My Listings</Link>
-  </>
-)}
-    <button onClick={handleLogout}>Logout</button>
-  </>
-) : (
-        <>
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
-        </>
-      )}
+    <nav className="bg-green-800 text-white px-6 py-4 flex items-center justify-between shadow-md">
+      <Link to="/listings" className="text-xl font-bold tracking-tight">
+        ♻️ WasteMarket
+      </Link>
+
+      <div className="flex items-center gap-6 text-sm font-medium">
+        <Link to="/listings" className="hover:text-amber-300 transition">Browse</Link>
+
+        {user ? (
+          <>
+            {user.role === 'industry' && (
+              <>
+                <Link to="/post-listing" className="hover:text-amber-300 transition">Post a Listing</Link>
+                <Link to="/my-listings" className="hover:text-amber-300 transition">My Listings</Link>
+              </>
+            )}
+            <span className="text-green-200">Hi, {user.name}</span>
+            <button
+              onClick={handleLogout}
+              className="bg-amber-500 text-green-900 px-4 py-1.5 rounded-md font-semibold hover:bg-amber-400 transition"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="hover:text-amber-300 transition">Login</Link>
+            <Link
+              to="/register"
+              className="bg-amber-500 text-green-900 px-4 py-1.5 rounded-md font-semibold hover:bg-amber-400 transition"
+            >
+              Register
+            </Link>
+          </>
+        )}
+      </div>
     </nav>
   );
 }
