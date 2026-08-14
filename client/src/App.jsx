@@ -4,9 +4,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Listings from './pages/Listings';
+import ListingDetail from './pages/ListingDetail';
 import PostListing from './pages/PostListing';
 import MyListings from './pages/MyListings';
-import ListingDetail from './pages/ListingDetail';
+import MyInquiries from './pages/MyInquiries';
 
 function App() {
   return (
@@ -26,13 +27,21 @@ function App() {
           }
         />
         <Route
-  path="/my-listings"
-  element={
-    <ProtectedRoute>
-      <MyListings />
-    </ProtectedRoute>
-  }
-/>
+          path="/my-listings"
+          element={
+            <ProtectedRoute>
+              <MyListings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-inquiries"
+          element={
+            <ProtectedRoute>
+              <MyInquiries />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

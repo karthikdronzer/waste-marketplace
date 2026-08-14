@@ -25,6 +25,7 @@ function Navbar() {
               <>
                 <Link to="/post-listing" className="hover:text-amber-300 transition">Post a Listing</Link>
                 <Link to="/my-listings" className="hover:text-amber-300 transition">My Listings</Link>
+                <Link to="/my-inquiries" className="hover:text-amber-300 transition">Inquiries</Link>
               </>
             )}
             <span className="text-green-200">Hi, {user.name}</span>
