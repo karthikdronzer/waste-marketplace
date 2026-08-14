@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Inquiry = require('../models/Inquiry');
-const WasteListing = require('../models/wastelisting');
+const WasteListing = require('../models/WasteListing');
 const authMiddleware = require('../middleware/auth');
 
 // Buyer sends interest on a listing

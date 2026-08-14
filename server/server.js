@@ -14,6 +14,8 @@ const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 const listingRoutes = require('./routes/listings');
 app.use('/api/listings', listingRoutes);
+const inquiryRoutes = require('./routes/inquiries');
+app.use('/api/inquiries', inquiryRoutes);
 
 // Test route
 app.get('/', (req, res) => {
