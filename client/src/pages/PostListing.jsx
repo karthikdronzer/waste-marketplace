@@ -1,15 +1,36 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
+import { cities } from '../data/cities';
 
 function PostListing() {
   const [formData, setFormData] = useState({
     title: '', description: '', wasteType: '', quantity: '', unit: '', pricePerUnit: '', location: '',
   });
+  const [suggestions, setSuggestions] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    if (e.target.name === 'location') {
+      const value = e.target.value.toLowerCase();
+      if (value.length > 0) {
+        const filtered = cities.filter((city) =>
+          city.toLowerCase().includes(value)
+        );
+        setSuggestions(filtered);
+      } else {
+        setSuggestions([]);
+      }
+    }
+  };
+
+  const selectCity = (city) => {
+    setFormData({ ...formData, location: city });
+    setSuggestions([]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,9 +65,29 @@ function PostListing() {
               <label className={labelClass}>Waste Type</label>
               <input name="wasteType" value={formData.wasteType} onChange={handleChange} required className={inputClass} />
             </div>
-            <div>
+            <div className="relative">
               <label className={labelClass}>Location</label>
-              <input name="location" value={formData.location} onChange={handleChange} required className={inputClass} />
+              <input
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                required
+                autoComplete="off"
+                className={inputClass}
+              />
+              {suggestions.length > 0 && (
+                <ul className="absolute z-10 bg-white border border-gray-200 rounded-md mt-1 w-full max-h-40 overflow-y-auto shadow-md">
+                  {suggestions.map((city) => (
+                    <li
+                      key={city}
+                      onClick={() => selectCity(city)}
+                      className="px-3 py-2 text-sm hover:bg-green-50 cursor-pointer"
+                    >
+                      {city}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4">
