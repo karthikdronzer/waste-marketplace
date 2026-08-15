@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
 import { cities } from '../data/cities';
+import { wasteTypes } from '../data/wasteTypes';
 
 function PostListing() {
   const [formData, setFormData] = useState({
@@ -80,7 +81,12 @@ function PostListing() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Waste Type</label>
-              <input name="wasteType" value={formData.wasteType} onChange={handleChange} required className={inputClass} />
+              <select name="wasteType" value={formData.wasteType} onChange={handleChange} required className={inputClass}>
+                <option value="" disabled>Select a type</option>
+                {wasteTypes.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
             </div>
             <div className="relative">
               <label className={labelClass}>Location</label>
