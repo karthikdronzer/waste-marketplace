@@ -8,6 +8,7 @@ const wasteListingSchema = new mongoose.Schema({
   unit: { type: String, required: true },
   pricePerUnit: { type: Number, required: true },
   location: { type: String, required: true },
+  imageUrl: { type: String, default: '' },
   postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   status: { type: String, enum: ['available', 'sold'], default: 'available' },
 }, { timestamps: true });

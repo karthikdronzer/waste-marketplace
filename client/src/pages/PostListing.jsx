@@ -7,6 +7,7 @@ function PostListing() {
   const [formData, setFormData] = useState({
     title: '', description: '', wasteType: '', quantity: '', unit: '', pricePerUnit: '', location: '',
   });
+  const [image, setImage] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -17,10 +18,7 @@ function PostListing() {
     if (e.target.name === 'location') {
       const value = e.target.value.toLowerCase();
       if (value.length > 0) {
-        const filtered = cities.filter((city) =>
-          city.toLowerCase().includes(value)
-        );
-        setSuggestions(filtered);
+        setSuggestions(cities.filter((city) => city.toLowerCase().includes(value)));
       } else {
         setSuggestions([]);
       }
@@ -36,8 +34,18 @@ function PostListing() {
     e.preventDefault();
     setError('');
     const token = localStorage.getItem('token');
+
+    const data = new FormData();
+    Object.keys(formData).forEach((key) => data.append(key, formData[key]));
+    if (image) data.append('image', image);
+
     try {
-      await API.post('/listings', formData, { headers: { Authorization: `Bearer ${token}` } });
+      await API.post('/listings', data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       navigate('/listings');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to post listing');
@@ -52,6 +60,15 @@ function PostListing() {
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md">
         <h2 className="text-2xl font-bold text-green-700 mb-6">Post a Waste Listing</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className={labelClass}>Photo</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+              className="w-full text-sm text-gray-600"
+            />
+          </div>
           <div>
             <label className={labelClass}>Title</label>
             <input name="title" value={formData.title} onChange={handleChange} required className={inputClass} />
