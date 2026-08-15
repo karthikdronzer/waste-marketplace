@@ -1,24 +1,28 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../api/axios';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function ListingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [listing, setListing] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [inquirySent, setInquirySent] = useState(false);
   const [inquiryError, setInquiryError] = useState('');
   const user = JSON.parse(localStorage.getItem('user'));
   const [error, setError] = useState('');
 
-useEffect(() => {
+  useEffect(() => {
     const fetchListing = async () => {
       try {
         const response = await API.get(`/listings/${id}`);
         setListing(response.data);
       } catch (err) {
         setError('Listing not found');
+      } finally {
+        setLoading(false);
       }
     };
     fetchListing();
@@ -40,12 +44,12 @@ useEffect(() => {
     }
   };
 
-  if (error) {
-    return <p className="text-center text-red-500 mt-10">{error}</p>;
+  if (loading) {
+    return <LoadingSpinner />;
   }
 
-  if (!listing) {
-    return <p className="text-center text-gray-400 mt-10">Loading...</p>;
+  if (error) {
+    return <p className="text-center text-red-500 mt-10">{error}</p>;
   }
 
   return (
@@ -58,6 +62,10 @@ useEffect(() => {
       </button>
 
       <div className="bg-white rounded-xl shadow-md p-8 border border-gray-100">
+        {listing.imageUrl && (
+          <img src={listing.imageUrl} alt={listing.title} className="w-full h-64 object-cover rounded-lg mb-6" />
+        )}
+
         <span className="inline-block bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full mb-4">
           {listing.wasteType}
         </span>
@@ -84,33 +92,34 @@ useEffect(() => {
         <div className="mt-2 text-xs text-gray-400">
           {listing.postedBy?.email}
         </div>
+
+        {user?.role === 'buyer' && (
+          <div className="border-t mt-6 pt-6">
+            {inquirySent ? (
+              <p className="text-green-600 font-medium">✅ Interest sent to the seller!</p>
+            ) : (
+              <form onSubmit={handleInquiry} className="space-y-3">
+                <label className="block text-sm font-medium text-gray-700">Message to seller</label>
+                <textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  required
+                  rows="3"
+                  placeholder="I'm interested in this listing, please share more details..."
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                {inquiryError && <p className="text-red-500 text-sm">{inquiryError}</p>}
+                <button
+                  type="submit"
+                  className="bg-amber-500 text-white px-5 py-2 rounded-md font-semibold hover:bg-amber-600 transition"
+                >
+                  Express Interest
+                </button>
+              </form>
+            )}
+          </div>
+        )}
       </div>
-    {user?.role === 'buyer' && (
-  <div className="border-t mt-6 pt-6">
-    {inquirySent ? (
-      <p className="text-green-600 font-medium">✅ Interest sent to the seller!</p>
-    ) : (
-      <form onSubmit={handleInquiry} className="space-y-3">
-        <label className="block text-sm font-medium text-gray-700">Message to seller</label>
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          required
-          rows="3"
-          placeholder="I'm interested in this listing, please share more details..."
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
-        {inquiryError && <p className="text-red-500 text-sm">{inquiryError}</p>}
-        <button
-          type="submit"
-          className="bg-amber-500 text-white px-5 py-2 rounded-md font-semibold hover:bg-amber-600 transition"
-        >
-          Express Interest
-        </button>
-      </form>
-    )}
-  </div>
-)}  
     </div>
   );
 }

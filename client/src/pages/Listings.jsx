@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function Listings() {
   const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -14,6 +16,8 @@ function Listings() {
         setListings(response.data);
       } catch (err) {
         setError('Failed to load listings');
+      } finally {
+        setLoading(false);
       }
     };
     fetchListings();
@@ -24,9 +28,14 @@ function Listings() {
       <h2 className="text-3xl font-bold text-green-800 mb-2">Browse Waste Listings</h2>
       <p className="text-gray-500 mb-8">Find reusable industrial byproducts near you</p>
 
+      {loading && <LoadingSpinner />}
       {error && <p className="text-red-500">{error}</p>}
-      {listings.length === 0 && !error && (
-        <p className="text-gray-400 italic">No listings available yet.</p>
+      {!loading && !error && listings.length === 0 && (
+        <div className="text-center py-16">
+          <p className="text-5xl mb-4">♻️</p>
+          <p className="text-gray-500 font-medium">No listings available yet.</p>
+          <p className="text-gray-400 text-sm mt-1">Check back soon, or be the first industry to post one!</p>
+        </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
