@@ -8,6 +8,7 @@ import ListingDetail from './pages/ListingDetail';
 import PostListing from './pages/PostListing';
 import MyListings from './pages/MyListings';
 import MyInquiries from './pages/MyInquiries';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

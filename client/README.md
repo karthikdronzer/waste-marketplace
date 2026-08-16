@@ -1,16 +1,27 @@
-# React + Vite
+# Waste Marketplace
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A MERN stack platform connecting industries with reusable byproduct waste to buyers who can put it to use — acting as an intermediary marketplace with a platform-fee business model.
 
-Currently, two official plugins are available:
+**Live site:** https://waste-marketplace.vercel.app
+**Live API:** https://waste-marketplace-api.onrender.com
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
+- JWT-based authentication with role selection (industry / buyer)
+- Password hashing with bcrypt
+- Role-based access control (only industries can post listings)
+- Ownership-based access control (only the original poster can edit/delete a listing)
+- Create, browse, search, filter, update, and delete waste listings
+- Image upload for listings via Cloudinary
+- Buyer inquiry system — express interest, industry can accept/decline
+- Location autocomplete and standardized waste type categories
+- Responsive, styled UI with Tailwind CSS
 
-## React Compiler
+## Tech Stack
+- **Frontend:** React (Vite), React Router, Axios, Tailwind CSS
+- **Backend:** Node.js, Express
+- **Database:** MongoDB Atlas with Mongoose
+- **Auth:** JWT, bcrypt
+- **Image storage:** Cloudinary
+- **Deployment:** Vercel (frontend), Render (backend)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Project Structure

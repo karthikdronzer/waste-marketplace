@@ -11,11 +11,11 @@ function PostListing() {
   const [image, setImage] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-
     if (e.target.name === 'location') {
       const value = e.target.value.toLowerCase();
       if (value.length > 0) {
@@ -33,6 +33,8 @@ function PostListing() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     setError('');
     const token = localStorage.getItem('token');
 
@@ -50,6 +52,7 @@ function PostListing() {
       navigate('/listings');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to post listing');
+      setSubmitting(false);
     }
   };
 
@@ -63,12 +66,7 @@ function PostListing() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className={labelClass}>Photo</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
-              className="w-full text-sm text-gray-600"
-            />
+            <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} className="w-full text-sm text-gray-600" />
           </div>
           <div>
             <label className={labelClass}>Title</label>
@@ -90,22 +88,11 @@ function PostListing() {
             </div>
             <div className="relative">
               <label className={labelClass}>Location</label>
-              <input
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                required
-                autoComplete="off"
-                className={inputClass}
-              />
+              <input name="location" value={formData.location} onChange={handleChange} required autoComplete="off" className={inputClass} />
               {suggestions.length > 0 && (
                 <ul className="absolute z-10 bg-white border border-gray-200 rounded-md mt-1 w-full max-h-40 overflow-y-auto shadow-md">
                   {suggestions.map((city) => (
-                    <li
-                      key={city}
-                      onClick={() => selectCity(city)}
-                      className="px-3 py-2 text-sm hover:bg-green-50 cursor-pointer"
-                    >
+                    <li key={city} onClick={() => selectCity(city)} className="px-3 py-2 text-sm hover:bg-green-50 cursor-pointer">
                       {city}
                     </li>
                   ))}
@@ -130,8 +117,12 @@ function PostListing() {
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
 
-          <button type="submit" className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition font-semibold">
-            Post Listing
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitting ? 'Posting...' : 'Post Listing'}
           </button>
         </form>
       </div>

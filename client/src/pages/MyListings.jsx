@@ -1,19 +1,24 @@
 import { useState, useEffect } from 'react';
 import API from '../api/axios';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function MyListings() {
   const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const user = JSON.parse(localStorage.getItem('user'));
   const token = localStorage.getItem('token');
 
   const fetchMyListings = async () => {
+    setLoading(true);
     try {
-      const response = await API.get('/listings');
-      const mine = response.data.filter((listing) => listing.postedBy?._id === user?.id);
-      setListings(mine);
+      const response = await API.get('/listings/my-listings', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setListings(response.data);
     } catch (err) {
       setError('Failed to load your listings');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,9 +45,15 @@ function MyListings() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
       <h2 className="text-3xl font-bold text-green-800 mb-8">My Listings</h2>
+
+      {loading && <LoadingSpinner />}
       {error && <p className="text-red-500">{error}</p>}
-      {listings.length === 0 && !error && (
-        <p className="text-gray-400 italic">You haven't posted any listings yet.</p>
+      {!loading && !error && listings.length === 0 && (
+        <div className="text-center py-16">
+          <p className="text-5xl mb-4">📦</p>
+          <p className="text-gray-500 font-medium">You haven't posted any listings yet.</p>
+          <p className="text-gray-400 text-sm mt-1">Use "Post a Listing" to add your first one.</p>
+        </div>
       )}
 
       <div className="space-y-4">

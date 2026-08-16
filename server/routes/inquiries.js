@@ -4,7 +4,6 @@ const Inquiry = require('../models/Inquiry');
 const WasteListing = require('../models/WasteListing');
 const authMiddleware = require('../middleware/auth');
 
-// Buyer sends interest on a listing
 router.post('/', authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== 'buyer') {
@@ -29,24 +28,47 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// Industry views inquiries they've received
 router.get('/received', authMiddleware, async (req, res) => {
   try {
     const inquiries = await Inquiry.find({ industry: req.user.id })
       .populate('listing', 'title')
-      .populate('buyer', 'name email phone');
+      .populate('buyer', 'name email phone')
+      .sort({ createdAt: -1 });
     res.json(inquiries);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
-// Buyer views inquiries they've sent
 router.get('/sent', authMiddleware, async (req, res) => {
   try {
     const inquiries = await Inquiry.find({ buyer: req.user.id })
-      .populate('listing', 'title');
+      .populate('listing', 'title')
+      .sort({ createdAt: -1 });
     res.json(inquiries);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Industry accepts or declines an inquiry they received
+router.put('/:id', authMiddleware, async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!['accepted', 'declined'].includes(status)) {
+      return res.status(400).json({ message: 'Status must be accepted or declined' });
+    }
+
+    const inquiry = await Inquiry.findById(req.params.id);
+    if (!inquiry) return res.status(404).json({ message: 'Inquiry not found' });
+
+    if (inquiry.industry.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You can only respond to your own inquiries' });
+    }
+
+    inquiry.status = status;
+    await inquiry.save();
+    res.json(inquiry);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
